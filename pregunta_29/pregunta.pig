@@ -33,4 +33,19 @@ $ pig -x local -f pregunta.pig
 
         >>> Escriba su respuesta a partir de este punto <<<
 */
+data = LOAD 'data.csv' USING PigStorage(',') AS (
+        f1:INT,
+        f2:CHARARRAY,
+        f3:CHARARRAY,
+        f4:DATETIME,
+        f5:CHARARRAY,
+        F6:INT
+);
 
+data1 = FOREACH data GENERATE ToString(f4, 'yyyy-MM-dd') AS fecha, LOWER(ToString(f4, 'MMM')) AS nombre_corto_mes, 
+                        ToString(f4, 'MM') AS mes, ToString(f4, 'M') AS mes2;
+
+data2 = FOREACH data1 GENERATE fecha, (nombre_corto_mes == 'jan'? 'ene':(nombre_corto_mes == 'apr'? 'abr':(nombre_corto_mes == 'dec'? 'dic':(nombre_corto_mes == 'aug'? 'ago':nombre_corto_mes)))) as diaAbreviado,
+mes, mes2; 
+
+STORE data2 INTO 'output' USING PigStorage(',');

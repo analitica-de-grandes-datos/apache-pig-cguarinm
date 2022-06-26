@@ -33,4 +33,20 @@ $ pig -x local -f pregunta.pig
 
         >>> Escriba su respuesta a partir de este punto <<<
 */
+data = LOAD 'data.csv' USING PigStorage(',') AS (
+        f1:INT,
+        f2:CHARARRAY,
+        f3:CHARARRAY,
+        f4:DATETIME,
+        f5:CHARARRAY,
+        F6:INT
+);
 
+data1 = FOREACH data GENERATE ToString(f4, 'yyyy-MM-dd') AS fecha, ToString(f4, 'dd') AS dia, ToString(f4, 'd') AS dia2, ToString(f4, 'EEE') AS nombre_corto_dia, ToString(f4, 'EEEE') AS nombre_dia;
+
+data2 = FOREACH data1 GENERATE fecha, dia, dia2, (nombre_corto_dia == 'Mon'? 'lun':(nombre_corto_dia == 'Tue'? 'mar':(nombre_corto_dia == 'Wed'? 'mie': 
+(nombre_corto_dia == 'Thu'? 'jue':(nombre_corto_dia == 'Fri'? 'vie':(nombre_corto_dia == 'Sat'? 'sab':(nombre_corto_dia == 'Sun'? 'dom':'falso'))))))) as diaAbreviado,  
+(nombre_dia == 'Monday'? 'lunes':(nombre_dia == 'Tuesday'? 'martes':(nombre_dia == 'Wednesday'? 'miercoles': 
+(nombre_dia == 'Thursday'? 'jueves':(nombre_dia == 'Friday'? 'viernes':(nombre_dia == 'Saturday'? 'sabado':(nombre_dia == 'Sunday'? 'domingo':'falso'))))))) as diaCompleto; 
+
+STORE data2 INTO 'output' USING PigStorage(',');

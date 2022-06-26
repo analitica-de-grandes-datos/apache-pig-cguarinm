@@ -18,5 +18,18 @@ $ pig -x local -f pregunta.pig
 
         >>> Escriba su respuesta a partir de este punto <<<
 */
+data = LOAD 'data.csv' USING PigStorage(',') AS (
+        f1:INT,
+        f2:CHARARRAY,
+        f3:CHARARRAY,
+        f4:CHARARRAY,
+        f5:CHARARRAY,
+        F6:INT
+);
 
+data1 = FOREACH data GENERATE f4 as c1;
+
+data2 = FOREACH data1 GENERATE REGEX_EXTRACT(c1, '(.*)-(.*)-(.*)', 2);
+
+STORE data2 INTO 'output' USING PigStorage(',');
 
